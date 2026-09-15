@@ -5,21 +5,39 @@ const initialContent = [
   // --- GLOBAL HEADER & FOOTER ---
   {
     page_route: 'global',
-    component_key: 'header_logo_text',
+    component_key: 'header_brand_mark',
     field_type: 'text',
-    content_value: 'daily-admin.com',
+    content_value: '◢',
+  },
+  {
+    page_route: 'global',
+    component_key: 'header_brand_title',
+    field_type: 'text',
+    content_value: 'daily admin',
+  },
+  {
+    page_route: 'global',
+    component_key: 'hero_title_line1',
+    field_type: 'text',
+    content_value: 'IMPACT',
+  },
+  {
+    page_route: 'global',
+    component_key: 'hero_title_line2',
+    field_type: 'text',
+    content_value: 'PRODUCTS',
   },
   {
     page_route: 'global',
     component_key: 'footer_copyright',
     field_type: 'text',
-    content_value: '© Copyright Daily-admin.com',
+    content_value: '© Copyright',
   },
   {
     page_route: 'global',
     component_key: 'footer_company_info',
     field_type: 'text',
-    content_value: 'Admin Charge SL - Marina 16, 27, 08005 Barcelona - contact@daily-admin.com',
+    content_value: 'Admin Charge SL · Marina 16, 27, 08005 Barcelona - contact@daily-admin.com',
   },
   {
     page_route: 'global',
@@ -31,114 +49,144 @@ const initialContent = [
   // --- HOME PAGE (`/`) ---
   {
     page_route: '/',
-    component_key: 'home_hero_badge',
+    component_key: 'green_choices_title',
     field_type: 'text',
     content_value: 'Green Choices',
   },
   {
     page_route: '/',
-    component_key: 'home_hero_title',
+    component_key: 'green_choices_bold',
     field_type: 'text',
-    content_value: 'Where sustainability meets convenience.',
+    content_value: 'sustainability meets convenience.',
   },
   {
     page_route: '/',
-    component_key: 'home_hero_description',
+    component_key: 'green_choices_text',
     field_type: 'textarea',
-    content_value: 'Our carefully curated selection of sustainable goods aims to promote a more mindful approach to shopping, encouraging positive changes for a healthier planet.',
+    content_value: 'Where sustainability meets convenience. Our carefully curated selection of sustainable goods aims to promote a more mindful approach to shopping, encouraging positive changes for a healthier planet.',
   },
   {
     page_route: '/',
-    component_key: 'home_hero_cta',
+    component_key: 'green_choices_btn',
     field_type: 'text',
     content_value: 'Our store',
   },
   {
     page_route: '/',
-    component_key: 'home_hero_image',
+    component_key: 'green_choices_img',
     field_type: 'image',
-    content_value: '/uploads/bottle.jpg',
+    content_value: '/assets/wooden-product.jpg',
   },
   {
     page_route: '/',
-    component_key: 'home_climate_badge',
+    component_key: 'climate_title',
     field_type: 'text',
     content_value: 'Make Climate Action Count',
   },
   {
     page_route: '/',
-    component_key: 'home_climate_description',
+    component_key: 'climate_bold',
+    field_type: 'text',
+    content_value: 'offset your carbon footprint',
+  },
+  {
+    page_route: '/',
+    component_key: 'climate_text',
     field_type: 'textarea',
     content_value: 'With us, you can offset your carbon footprint either once or on a monthly basis. For example, you can spend 5 euros per month on carbon credits to offset your monthly driven kilometers, or you can choose to offset your flights either monthly or as a one-time action.',
   },
   {
     page_route: '/',
-    component_key: 'home_climate_cta',
+    component_key: 'climate_btn',
     field_type: 'text',
     content_value: 'Your climate journey',
   },
   {
     page_route: '/',
-    component_key: 'home_climate_image',
+    component_key: 'climate_img',
     field_type: 'image',
-    content_value: '/uploads/climate-banner.jpg',
+    content_value: '/assets/wind-turbine.jpg',
   },
   {
     page_route: '/',
-    component_key: 'home_about_section_title',
+    component_key: 'about_title',
     field_type: 'text',
     content_value: 'About us',
   },
   {
     page_route: '/',
-    component_key: 'home_about_q1',
+    component_key: 'faq1_q',
     field_type: 'text',
     content_value: 'Who are we and what do we do?',
   },
   {
     page_route: '/',
-    component_key: 'home_about_a1',
+    component_key: 'faq1_a',
     field_type: 'textarea',
     content_value: 'Daily-admin.com is a sustainability-focused platform helping individuals and families reduce their environmental footprint in a simple and practical way. We offer monthly carbon offset subscriptions (Offset Journey) that allow you to offset emissions from daily activities, as well as eco-friendly product subscriptions (such as bamboo toilet paper and toothpaste tablets) delivered conveniently to your home. Our operations are fully transparent, legally structured, and designed to make sustainable living accessible to everyone.',
   },
   {
     page_route: '/',
-    component_key: 'home_about_q2',
+    component_key: 'faq2_q',
     field_type: 'text',
     content_value: 'Why do we do this?',
   },
   {
     page_route: '/',
-    component_key: 'home_about_a2',
+    component_key: 'faq2_a',
     field_type: 'textarea',
-    content_value: 'We believe that living sustainably should be easy and affordable for everyone. Climate change and environmental challenges can feel overwhelming, and many people want to contribute positively but don’t know where to start. We created Daily-admin.com to provide a reliable, structured way to take daily action by offsetting your carbon footprint and replacing everyday products with environmentally friendly alternatives, without added complexity.',
+    content_value: 'We want to make meaningful climate action simple, practical and accessible in everyday life.',
   },
   {
     page_route: '/',
-    component_key: 'home_about_q3',
+    component_key: 'faq3_q',
     field_type: 'text',
     content_value: 'How do our subscriptions work?',
   },
   {
     page_route: '/',
-    component_key: 'home_about_a3',
+    component_key: 'faq3_a',
     field_type: 'textarea',
-    content_value: 'Daily-admin.com offers monthly, recurring subscriptions that you can manage easily from your online account. For Offset Journey, your subscription automatically offsets your estimated monthly CO₂ emissions with verified climate projects. For product subscriptions, you receive high-quality, eco-friendly products delivered to your doorstep each month, with the option to adjust or cancel anytime. All payments are processed securely, and we comply with European regulations to ensure your data and transactions are protected.',
+    content_value: 'Choose a subscription, select the option that fits your lifestyle, and we take care of the recurring delivery or offset contribution.',
   },
   {
     page_route: '/',
-    component_key: 'home_cta_banner_title',
+    component_key: 'cta_h2',
     field_type: 'text',
     content_value: 'Combat climate change!',
   },
   {
     page_route: '/',
-    component_key: 'home_cta_banner_subtitle',
+    component_key: 'cta_h3',
     field_type: 'text',
     content_value: 'Join us.',
   },
+  {
+    page_route: '/',
+    component_key: 'cta_btn1',
+    field_type: 'text',
+    content_value: 'Climate journey',
+  },
+  {
+    page_route: '/',
+    component_key: 'cta_btn2',
+    field_type: 'text',
+    content_value: 'info@daily-admin.com',
+  },
+  {
+    page_route: '/',
+    component_key: 'cta_btn3',
+    field_type: 'text',
+    content_value: 'Green store',
+  },
+  {
+    page_route: '/',
+    component_key: 'cta_btn4',
+    field_type: 'text',
+    content_value: 'Cancel subscription',
+  },
 
-  // --- ABOUT PAGE (`/about`) ---
+  // --- SUBPAGES ---
   {
     page_route: '/about',
     component_key: 'about_title',
@@ -146,27 +194,11 @@ const initialContent = [
     content_value: 'About Daily-admin.com',
   },
   {
-    page_route: '/about',
-    component_key: 'about_intro',
-    field_type: 'textarea',
-    content_value: 'We are committed to making sustainable living simple, transparent, and actionable for everyone across Europe.',
-  },
-
-  // --- STORE / SHOP PAGE (`/shop`) ---
-  {
     page_route: '/shop',
     component_key: 'shop_title',
     field_type: 'text',
     content_value: 'Our Eco Store',
   },
-  {
-    page_route: '/shop',
-    component_key: 'shop_intro',
-    field_type: 'textarea',
-    content_value: 'Explore our eco-friendly products made with sustainably sourced materials designed for your daily routine.',
-  },
-
-  // --- JOURNEY PAGE (`/journey`) ---
   {
     page_route: '/journey',
     component_key: 'journey_title',
@@ -174,27 +206,11 @@ const initialContent = [
     content_value: 'Your Climate Journey',
   },
   {
-    page_route: '/journey',
-    component_key: 'journey_intro',
-    field_type: 'textarea',
-    content_value: 'Offset your carbon footprint with certified global climate projects through simple monthly plans.',
-  },
-
-  // --- SIGN UP PAGE (`/sign-up`) ---
-  {
     page_route: '/sign-up',
     component_key: 'sign_up_title',
     field_type: 'text',
     content_value: 'Sign Up for Daily Action',
   },
-  {
-    page_route: '/sign-up',
-    component_key: 'sign_up_intro',
-    field_type: 'textarea',
-    content_value: 'Create an account to manage your sustainability subscriptions and track your impact.',
-  },
-
-  // --- CAREERS PAGE (`/joinus`) ---
   {
     page_route: '/joinus',
     component_key: 'joinus_title',
@@ -202,27 +218,11 @@ const initialContent = [
     content_value: 'Careers at Daily-admin.com',
   },
   {
-    page_route: '/joinus',
-    component_key: 'joinus_intro',
-    field_type: 'textarea',
-    content_value: 'Join our passionate team dedicated to accelerating the shift toward sustainable living.',
-  },
-
-  // --- INQUIRIES PAGE (`/contact-2`) ---
-  {
     page_route: '/contact-2',
     component_key: 'contact_2_title',
     field_type: 'text',
     content_value: 'Inquiries & Support',
   },
-  {
-    page_route: '/contact-2',
-    component_key: 'contact_2_intro',
-    field_type: 'textarea',
-    content_value: 'Have questions? Contact our team at contact@daily-admin.com or fill out the inquiry form below.',
-  },
-
-  // --- FAQ PAGE (`/faq-2`) ---
   {
     page_route: '/faq-2',
     component_key: 'faq_2_title',
@@ -230,27 +230,11 @@ const initialContent = [
     content_value: 'Frequently Asked Questions',
   },
   {
-    page_route: '/faq-2',
-    component_key: 'faq_2_intro',
-    field_type: 'textarea',
-    content_value: 'Find clear answers regarding subscriptions, billing, delivery, and carbon offsetting integrity.',
-  },
-
-  // --- PRIVACY PAGE (`/privacy-cookie`) ---
-  {
     page_route: '/privacy-cookie',
     component_key: 'privacy_cookie_title',
     field_type: 'text',
     content_value: 'Privacy & Cookie Policy',
   },
-  {
-    page_route: '/privacy-cookie',
-    component_key: 'privacy_cookie_content',
-    field_type: 'textarea',
-    content_value: 'Daily-admin.com values your privacy and ensures compliant handling of personal data under GDPR.',
-  },
-
-  // --- PRINCIPLES PAGE (`/principles`) ---
   {
     page_route: '/principles',
     component_key: 'principles_title',
@@ -258,27 +242,11 @@ const initialContent = [
     content_value: 'Our Operating Principles',
   },
   {
-    page_route: '/principles',
-    component_key: 'principles_content',
-    field_type: 'textarea',
-    content_value: 'Transparency, measurable climate action, and high ethical standards guide all our product offerings.',
-  },
-
-  // --- ETHICS PAGE (`/ethics`) ---
-  {
     page_route: '/ethics',
     component_key: 'ethics_title',
     field_type: 'text',
     content_value: 'Code of Ethics',
   },
-  {
-    page_route: '/ethics',
-    component_key: 'ethics_content',
-    field_type: 'textarea',
-    content_value: 'We prioritize verified sustainability partners and fair labor standards throughout our supply chain.',
-  },
-
-  // --- TERMS PAGE (`/terms-support`) ---
   {
     page_route: '/terms-support',
     component_key: 'terms_support_title',
@@ -286,24 +254,10 @@ const initialContent = [
     content_value: 'Terms of Service',
   },
   {
-    page_route: '/terms-support',
-    component_key: 'terms_support_content',
-    field_type: 'textarea',
-    content_value: 'Review the legal terms governing use of Daily-admin.com services and product subscriptions.',
-  },
-
-  // --- CANCEL PAGE (`/cancel`) ---
-  {
     page_route: '/cancel',
     component_key: 'cancel_title',
     field_type: 'text',
     content_value: 'Cancel Subscription',
-  },
-  {
-    page_route: '/cancel',
-    component_key: 'cancel_intro',
-    field_type: 'textarea',
-    content_value: 'You can modify or cancel your subscription at any time without hidden fees or lock-ins.',
   },
 ];
 
