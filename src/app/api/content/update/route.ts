@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { db } from '@/db';
 import { siteContent } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST(request: Request) {
+  const cookieStore = cookies();
+  const authCookie = cookieStore.get('admin_auth');
+
+  if (!authCookie || authCookie.value !== 'true') {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
-    const { updates } = body; // Array of { id: number, content_value: string } or { component_key: string, content_value: string }
+    const { updates } = body;
 
     if (!Array.isArray(updates)) {
       return NextResponse.json({ success: false, message: 'Invalid payload, expected updates array' }, { status: 400 });

@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cms_daily_admin_com_app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - ADMIN_PASSWORD=admin123
+      - NEXT_PUBLIC_SITE_URL=https://cms.daily-admin.com
+    volumes:
+      - ./sqlite.db:/app/sqlite.db
+      - ./data/uploads:/app/public/uploads
+    labels:
+      - "traefik.enable=true"
+      # Secure HTTPS router
+      - "traefik.http.routers.cms_daily_admin_com.rule=Host(`cms.daily-admin.com`)"
+      - "traefik.http.routers.cms_daily_admin_com.entrypoints=websecure"
+      - "traefik.http.routers.cms_daily_admin_com.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cms_daily_admin_com.loadbalancer.server.port=3000"
+      # HTTP router for HTTP access / redirect
+      - "traefik.http.routers.cms_daily_admin_com_http.rule=Host(`cms.daily-admin.com`)"
+      - "traefik.http.routers.cms_daily_admin_com_http.entrypoints=web"
+      - "traefik.http.routers.cms_daily_admin_com_http.service=cms_daily_admin_com"
+    networks:
+      - cms_daily_admin_com_net
+      - traefik-net
+
+networks:
+  cms_daily_admin_com_net:
+    name: cms_daily_admin_com_net
+    internal: false
+  traefik-net:
+    external: true

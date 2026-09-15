@@ -183,13 +183,13 @@ const initialContent = [
   // --- SIGN UP PAGE (`/sign-up`) ---
   {
     page_route: '/sign-up',
-    component_key: 'signup_title',
+    component_key: 'sign_up_title',
     field_type: 'text',
     content_value: 'Sign Up for Daily Action',
   },
   {
     page_route: '/sign-up',
-    component_key: 'signup_intro',
+    component_key: 'sign_up_intro',
     field_type: 'textarea',
     content_value: 'Create an account to manage your sustainability subscriptions and track your impact.',
   },
@@ -197,13 +197,13 @@ const initialContent = [
   // --- CAREERS PAGE (`/joinus`) ---
   {
     page_route: '/joinus',
-    component_key: 'careers_title',
+    component_key: 'joinus_title',
     field_type: 'text',
     content_value: 'Careers at Daily-admin.com',
   },
   {
     page_route: '/joinus',
-    component_key: 'careers_intro',
+    component_key: 'joinus_intro',
     field_type: 'textarea',
     content_value: 'Join our passionate team dedicated to accelerating the shift toward sustainable living.',
   },
@@ -211,13 +211,13 @@ const initialContent = [
   // --- INQUIRIES PAGE (`/contact-2`) ---
   {
     page_route: '/contact-2',
-    component_key: 'contact_title',
+    component_key: 'contact_2_title',
     field_type: 'text',
     content_value: 'Inquiries & Support',
   },
   {
     page_route: '/contact-2',
-    component_key: 'contact_intro',
+    component_key: 'contact_2_intro',
     field_type: 'textarea',
     content_value: 'Have questions? Contact our team at contact@daily-admin.com or fill out the inquiry form below.',
   },
@@ -225,13 +225,13 @@ const initialContent = [
   // --- FAQ PAGE (`/faq-2`) ---
   {
     page_route: '/faq-2',
-    component_key: 'faq_title',
+    component_key: 'faq_2_title',
     field_type: 'text',
     content_value: 'Frequently Asked Questions',
   },
   {
     page_route: '/faq-2',
-    component_key: 'faq_intro',
+    component_key: 'faq_2_intro',
     field_type: 'textarea',
     content_value: 'Find clear answers regarding subscriptions, billing, delivery, and carbon offsetting integrity.',
   },
@@ -239,13 +239,13 @@ const initialContent = [
   // --- PRIVACY PAGE (`/privacy-cookie`) ---
   {
     page_route: '/privacy-cookie',
-    component_key: 'privacy_title',
+    component_key: 'privacy_cookie_title',
     field_type: 'text',
     content_value: 'Privacy & Cookie Policy',
   },
   {
     page_route: '/privacy-cookie',
-    component_key: 'privacy_content',
+    component_key: 'privacy_cookie_content',
     field_type: 'textarea',
     content_value: 'Daily-admin.com values your privacy and ensures compliant handling of personal data under GDPR.',
   },
@@ -281,13 +281,13 @@ const initialContent = [
   // --- TERMS PAGE (`/terms-support`) ---
   {
     page_route: '/terms-support',
-    component_key: 'terms_title',
+    component_key: 'terms_support_title',
     field_type: 'text',
     content_value: 'Terms of Service',
   },
   {
     page_route: '/terms-support',
-    component_key: 'terms_content',
+    component_key: 'terms_support_content',
     field_type: 'textarea',
     content_value: 'Review the legal terms governing use of Daily-admin.com services and product subscriptions.',
   },
