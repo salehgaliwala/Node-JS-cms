@@ -38,12 +38,23 @@ export default async function HomePage() {
             </div>
 
             <div className="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 aspect-[4/3]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={content.home_hero_image || '/uploads/bottle.jpg'}
-                alt="Green Choices"
-                className="w-full h-full object-cover"
-              />
+              {content.home_hero_video || content.home_hero_image?.endsWith('.mp4') || content.home_hero_image?.endsWith('.webm') ? (
+                <video
+                  src={content.home_hero_video || content.home_hero_image}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={content.home_hero_image || '/uploads/bottle.jpg'}
+                  alt="Green Choices"
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
           </div>
         </section>
