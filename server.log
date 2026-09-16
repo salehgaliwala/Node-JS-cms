@@ -1,9 +1,20 @@
 
-> nextapp@0.1.0 start
-> next start
+> nextapp@0.1.0 dev
+> next dev
 
+ ⚠ Port 3000 is in use, trying 3001 instead.
   ▲ Next.js 14.2.35
-  - Local:        http://localhost:3000
+  - Local:        http://localhost:3001
 
  ✓ Starting...
- ✓ Ready in 402ms
+ ✓ Ready in 1762ms
+ ○ Compiling /sign-up ...
+ ✓ Compiled /sign-up in 4.1s (560 modules)
+ GET /sign-up 200 in 4732ms
+ ✓ Compiled in 601ms (266 modules)
+ ○ Compiling /api/content ...
+ ✓ Compiled /api/content in 4s (378 modules)
+ GET /api/content?route=/sign-up 200 in 4213ms
+ GET /api/content?route=/sign-up 200 in 17ms
+ ✓ Compiled /api/subscriptions in 136ms (380 modules)
+ POST /api/subscriptions 200 in 200ms

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { db } from '@/db';
+import { siteUploads } from '@/db/schema';
 
 export async function POST(request: Request) {
   const cookieStore = cookies();
@@ -13,26 +15,51 @@ export async function POST(request: Request) {
 
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File | null;
+    const files = formData.getAll('files') as File[];
 
-    if (!file) {
-      return NextResponse.json({ success: false, message: 'No file uploaded' }, { status: 400 });
+    if (!files || files.length === 0) {
+      // Fallback single file check
+      const singleFile = formData.get('file') as File | null;
+      if (singleFile) {
+        files.push(singleFile);
+      }
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    if (!files || files.length === 0) {
+      return NextResponse.json({ success: false, message: 'No files uploaded' }, { status: 400 });
+    }
 
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     await mkdir(uploadsDir, { recursive: true });
 
-    const sanitizedFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-    const filePath = path.join(uploadsDir, sanitizedFileName);
+    const uploadedResults: { filename: string; url: string }[] = [];
 
-    await writeFile(filePath, buffer);
+    for (const file of files) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
 
-    const relativeUrl = `/uploads/${sanitizedFileName}`;
+      const sanitizedFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const filePath = path.join(uploadsDir, sanitizedFileName);
 
-    return NextResponse.json({ success: true, url: relativeUrl });
+      await writeFile(filePath, buffer);
+
+      const relativeUrl = `/uploads/${sanitizedFileName}`;
+
+      db.insert(siteUploads)
+        .values({
+          filename: file.name,
+          url: relativeUrl,
+          uploaded_at: new Date().toISOString(),
+        })
+        .run();
+
+      uploadedResults.push({
+        filename: file.name,
+        url: relativeUrl,
+      });
+    }
+
+    return NextResponse.json({ success: true, uploaded: uploadedResults, url: uploadedResults[0]?.url });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
   }

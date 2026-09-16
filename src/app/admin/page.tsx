@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from 'react';
 
-interface ContentItem {
+interface UploadItem {
   id: number;
-  page_route: string;
-  component_key: string;
-  field_type: 'text' | 'textarea' | 'image';
-  content_value: string;
+  filename: string;
+  url: string;
+  uploaded_at: string;
 }
 
 export default function AdminPage() {
@@ -16,27 +15,30 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [items, setItems] = useState<ContentItem[]>([]);
-  const [selectedRoute, setSelectedRoute] = useState<string>('all');
+  const [selectedRoute, setSelectedRoute] = useState<string>('/');
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
+  const [isCustomEnabled, setIsCustomEnabled] = useState<boolean>(false);
+
+  const [uploads, setUploads] = useState<UploadItem[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string>('');
-  const [uploadingId, setUploadingId] = useState<number | null>(null);
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
   const routesList = [
-    { label: 'All Pages', value: 'all' },
-    { label: 'Global (Header/Footer)', value: 'global' },
     { label: 'Home (/)', value: '/' },
     { label: 'About (/about)', value: '/about' },
-    { label: 'Store (/shop)', value: '/shop' },
     { label: 'Journey (/journey)', value: '/journey' },
+    { label: 'Eco Store (/shop)', value: '/shop' },
     { label: 'Sign Up (/sign-up)', value: '/sign-up' },
     { label: 'Careers (/joinus)', value: '/joinus' },
-    { label: 'Inquiries (/contact-2)', value: '/contact-2' },
+    { label: 'Contact Us (/contact-2)', value: '/contact-2' },
     { label: 'FAQ (/faq-2)', value: '/faq-2' },
     { label: 'Privacy (/privacy-cookie)', value: '/privacy-cookie' },
     { label: 'Principles (/principles)', value: '/principles' },
     { label: 'Ethics (/ethics)', value: '/ethics' },
     { label: 'Terms (/terms-support)', value: '/terms-support' },
-    { label: 'Cancel (/cancel)', value: '/cancel' },
+    { label: 'Cancel Subscription (/cancel)', value: '/cancel' },
   ];
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -63,38 +65,50 @@ export default function AdminPage() {
     }
   };
 
-  const fetchContent = async () => {
+  const fetchPageContent = async (route: string) => {
     setLoading(true);
     try {
-      const routeParam = selectedRoute === 'all' ? '' : selectedRoute;
-      const res = await fetch(`/api/content?route=${encodeURIComponent(routeParam)}`);
+      const res = await fetch(`/api/content?route=${encodeURIComponent(route)}`);
       const data = await res.json();
-      if (data.success) {
-        setItems(data.raw || []);
+      if (data.success && data.data) {
+        setTitle(data.data.title || '');
+        setContent(data.data.content || '');
+        setIsCustomEnabled(data.data.is_custom_content_enabled === 1);
       }
     } catch (err) {
-      console.error('Failed to fetch content:', err);
+      console.error('Failed to fetch page content:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchUploads = async () => {
+    try {
+      const res = await fetch('/api/content?route=uploads');
+      const data = await res.json();
+      if (data.success && data.uploads) {
+        setUploads(data.uploads);
+      }
+    } catch (err) {
+      console.error('Failed to fetch uploads:', err);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
-      fetchContent();
+      fetchPageContent(selectedRoute);
+      fetchUploads();
     }
   }, [isAuthenticated, selectedRoute]);
 
-  const handleInputChange = (id: number, newValue: string) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, content_value: newValue } : item))
-    );
-  };
+  const handleMultipleFilesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    setUploading(true);
 
-  const handleFileUpload = async (id: number, file: File) => {
-    setUploadingId(id);
     const formData = new FormData();
-    formData.append('file', file);
+    Array.from(e.target.files).forEach((file) => {
+      formData.append('files', file);
+    });
 
     try {
       const res = await fetch('/api/content/upload', {
@@ -102,42 +116,48 @@ export default function AdminPage() {
         body: formData,
       });
       const data = await res.json();
-      if (data.success && data.url) {
-        handleInputChange(id, data.url);
+      if (data.success) {
+        fetchUploads();
       } else {
         alert('Image upload failed: ' + data.message);
       }
     } catch (err) {
       alert('Upload error: ' + (err as Error).message);
     } finally {
-      setUploadingId(null);
+      setUploading(false);
     }
   };
 
   const handleSaveChanges = async () => {
-    setSaveStatus('Saving...');
+    setSaveStatus('Saving changes...');
     try {
-      const updates = items.map((item) => ({
-        id: item.id,
-        content_value: item.content_value,
-      }));
-
       const res = await fetch('/api/content/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ updates }),
+        body: JSON.stringify({
+          page_route: selectedRoute,
+          title,
+          content,
+          is_custom_content_enabled: isCustomEnabled ? 1 : 0,
+        }),
       });
 
       const data = await res.json();
       if (data.success) {
-        setSaveStatus('Changes saved successfully!');
+        setSaveStatus('Saved successfully!');
         setTimeout(() => setSaveStatus(''), 3000);
       } else {
-        setSaveStatus('Failed to save changes.');
+        setSaveStatus('Failed to save.');
       }
     } catch (err) {
       setSaveStatus('Save error: ' + (err as Error).message);
     }
+  };
+
+  const copyToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(url);
+    setTimeout(() => setCopiedUrl(null), 2000);
   };
 
   if (!isAuthenticated) {
@@ -148,7 +168,7 @@ export default function AdminPage() {
             Daily-admin CMS Dashboard
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Enter admin password to manage structured content
+            Enter admin password to manage HTML/CSS content and image assets
           </p>
         </div>
 
@@ -191,19 +211,14 @@ export default function AdminPage() {
     );
   }
 
-  const filteredItems =
-    selectedRoute === 'all'
-      ? items
-      : items.filter((item) => item.page_route === selectedRoute);
-
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 font-sans pb-16">
-      {/* Top Bar */}
+      {/* Top Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold tracking-tight text-black">
-              Structured Content Editor
+              Daily Admin Structured Content & Asset Manager
             </h1>
             <span className="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-medium">
               Live Headless CMS
@@ -217,7 +232,7 @@ export default function AdminPage() {
             )}
             <button
               onClick={handleSaveChanges}
-              className="bg-black hover:bg-gray-800 text-white font-semibold px-5 py-2.5 rounded-lg text-sm shadow transition-colors"
+              className="bg-black hover:bg-gray-800 text-white font-semibold px-6 py-2.5 rounded-lg text-sm shadow transition-colors"
             >
               Save Changes
             </button>
@@ -225,123 +240,143 @@ export default function AdminPage() {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Route Filter Dropdown */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Route Selector & Controls */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Filter Content by Page</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Select Page Route to Edit</h2>
             <p className="text-sm text-gray-500">
-              Select a route to manage its editable fields and assets.
+              Manage raw HTML/CSS content and toggle custom layout rendering.
             </p>
           </div>
-          <select
-            value={selectedRoute}
-            onChange={(e) => setSelectedRoute(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white font-medium focus:ring-black focus:border-black text-black"
-          >
-            {routesList.map((r) => (
-              <option key={r.value} value={r.value}>
-                {r.label}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center space-x-4">
+            <select
+              value={selectedRoute}
+              onChange={(e) => setSelectedRoute(e.target.value)}
+              className="border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white font-medium focus:ring-black focus:border-black text-black"
+            >
+              {routesList.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Dynamic Form List */}
-        {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading structured fields...</div>
-        ) : filteredItems.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl border border-gray-200 text-gray-500">
-            No content entries found for this route.
+        {/* Page Content Editor */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Page Settings & HTML/CSS Content</h3>
+              <p className="text-sm text-gray-500">Route: <code className="bg-gray-100 px-2 py-0.5 rounded text-black font-mono">{selectedRoute}</code></p>
+            </div>
+            <div className="flex items-center space-x-3 bg-gray-50 p-2.5 border border-gray-200 rounded-lg">
+              <label htmlFor="toggle-custom" className="text-sm font-medium text-gray-800 cursor-pointer">
+                Use Custom HTML/CSS Content
+              </label>
+              <input
+                id="toggle-custom"
+                type="checkbox"
+                checked={isCustomEnabled}
+                onChange={(e) => setIsCustomEnabled(e.target.checked)}
+                className="w-5 h-5 text-black border-gray-300 rounded focus:ring-black cursor-pointer"
+              />
+            </div>
           </div>
-        ) : (
-          <div className="space-y-6">
-            {filteredItems.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-gray-300 transition-all"
-              >
-                <div className="flex items-center justify-between mb-3">
+
+          {/* Title Field */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Page Title
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter page title..."
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-black focus:ring-2 focus:ring-black focus:border-black"
+            />
+          </div>
+
+          {/* Raw HTML & CSS Editor */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                HTML & CSS Code (Insert HTML & inline <code>&lt;style&gt;</code> rules)
+              </label>
+              <span className="text-xs text-gray-400 font-mono">HTML / CSS Supported</span>
+            </div>
+            <textarea
+              rows={14}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="<style> .hero { background: #f4f4f4; } </style>\n<div className='hero'> <h1>Welcome</h1> </div>"
+              className="w-full border border-gray-300 rounded-lg p-4 font-mono text-xs leading-relaxed text-black bg-slate-900 text-emerald-400 focus:ring-2 focus:ring-black focus:border-black"
+            />
+          </div>
+        </div>
+
+        {/* Multiple Image Uploader & Asset Gallery */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-200">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Image Asset Uploader & Gallery</h3>
+              <p className="text-sm text-gray-500">
+                Upload multiple images. Click on any URL below to copy and paste into your HTML/CSS content.
+              </p>
+            </div>
+            <div>
+              <label className="cursor-pointer inline-flex items-center bg-black hover:bg-gray-800 text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow transition-colors">
+                {uploading ? 'Uploading...' : '📁 Upload Images'}
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleMultipleFilesUpload}
+                  disabled={uploading}
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Uploaded Gallery Grid */}
+          {uploads.length === 0 ? (
+            <div className="text-center py-8 text-gray-400 border border-dashed border-gray-300 rounded-lg">
+              No uploaded images yet. Click &quot;Upload Images&quot; to add image assets.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {uploads.map((item) => (
+                <div key={item.id} className="border border-gray-200 rounded-lg p-3 bg-gray-50 flex flex-col justify-between space-y-3">
+                  <div className="w-full h-32 bg-gray-200 rounded overflow-hidden flex items-center justify-center relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.url}
+                      alt={item.filename}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <div>
-                    <span className="font-mono text-xs text-gray-500 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded">
-                      {item.page_route}
-                    </span>
-                    <h3 className="text-md font-bold text-gray-900 mt-1">
-                      {item.component_key}
-                    </h3>
+                    <p className="text-xs font-medium text-gray-800 truncate" title={item.filename}>
+                      {item.filename}
+                    </p>
+                    <p className="text-[10px] text-gray-400 font-mono truncate">{item.url}</p>
                   </div>
-                  <span className="text-xs font-semibold text-gray-400 uppercase">
-                    Field Type: {item.field_type}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(item.url)}
+                    className="w-full text-xs bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 font-medium py-1.5 rounded transition-colors"
+                  >
+                    {copiedUrl === item.url ? '✓ Copied URL!' : '📋 Copy Image URL'}
+                  </button>
                 </div>
-
-                {/* Field Controls */}
-                {item.field_type === 'text' && (
-                  <input
-                    type="text"
-                    value={item.content_value}
-                    onChange={(e) => handleInputChange(item.id, e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black focus:ring-2 focus:ring-black focus:border-black"
-                  />
-                )}
-
-                {item.field_type === 'textarea' && (
-                  <textarea
-                    rows={4}
-                    value={item.content_value}
-                    onChange={(e) => handleInputChange(item.id, e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-black focus:ring-2 focus:ring-black focus:border-black"
-                  />
-                )}
-
-                {item.field_type === 'image' && (
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-4">
-                      <input
-                        type="text"
-                        value={item.content_value}
-                        onChange={(e) => handleInputChange(item.id, e.target.value)}
-                        placeholder="Image URL or relative path"
-                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-black focus:ring-2 focus:ring-black focus:border-black"
-                      />
-                      <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold px-4 py-2.5 rounded-lg border border-gray-300 transition-colors">
-                        {uploadingId === item.id ? 'Uploading...' : 'Upload Image'}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                              handleFileUpload(item.id, e.target.files[0]);
-                            }
-                          }}
-                        />
-                      </label>
-                    </div>
-
-                    {item.content_value && (
-                      <div className="mt-2">
-                        <p className="text-xs font-medium text-gray-500 mb-1">Preview:</p>
-                        <div className="w-40 h-28 border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center relative">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={item.content_value}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

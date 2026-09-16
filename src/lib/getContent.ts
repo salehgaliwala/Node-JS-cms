@@ -1,22 +1,33 @@
 import { db } from '@/db';
 import { siteContent } from '@/db/schema';
-import { eq, or } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
-export async function getContent(route: string): Promise<Record<string, string>> {
+export interface PageContent {
+  page_route: string;
+  title: string;
+  content: string;
+  is_custom_content_enabled: boolean;
+}
+
+export async function getPageContent(route: string): Promise<PageContent> {
   try {
-    const rows = db
-      .select()
-      .from(siteContent)
-      .where(or(eq(siteContent.page_route, route), eq(siteContent.page_route, 'global')))
-      .all();
-
-    const flattened: Record<string, string> = {};
-    for (const row of rows) {
-      flattened[row.component_key] = row.content_value;
+    const page = db.select().from(siteContent).where(eq(siteContent.page_route, route)).get();
+    if (page) {
+      return {
+        page_route: page.page_route,
+        title: page.title,
+        content: page.content,
+        is_custom_content_enabled: page.is_custom_content_enabled === 1,
+      };
     }
-    return flattened;
   } catch (err) {
-    console.error('getContent error:', err);
-    return {};
+    console.error('getPageContent error:', err);
   }
+
+  return {
+    page_route: route,
+    title: 'Daily Admin',
+    content: '',
+    is_custom_content_enabled: false,
+  };
 }

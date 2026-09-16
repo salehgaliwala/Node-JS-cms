@@ -14,27 +14,35 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { updates } = body;
+    const { page_route, title, content, is_custom_content_enabled } = body;
 
-    if (!Array.isArray(updates)) {
-      return NextResponse.json({ success: false, message: 'Invalid payload, expected updates array' }, { status: 400 });
+    if (!page_route) {
+      return NextResponse.json({ success: false, message: 'page_route is required' }, { status: 400 });
     }
 
-    for (const update of updates) {
-      if (update.id) {
-        db.update(siteContent)
-          .set({ content_value: update.content_value })
-          .where(eq(siteContent.id, update.id))
-          .run();
-      } else if (update.component_key) {
-        db.update(siteContent)
-          .set({ content_value: update.content_value })
-          .where(eq(siteContent.component_key, update.component_key))
-          .run();
-      }
+    const existing = db.select().from(siteContent).where(eq(siteContent.page_route, page_route)).get();
+
+    if (existing) {
+      db.update(siteContent)
+        .set({
+          title: title ?? existing.title,
+          content: content ?? existing.content,
+          is_custom_content_enabled: is_custom_content_enabled !== undefined ? (is_custom_content_enabled ? 1 : 0) : existing.is_custom_content_enabled,
+        })
+        .where(eq(siteContent.page_route, page_route))
+        .run();
+    } else {
+      db.insert(siteContent)
+        .values({
+          page_route,
+          title: title || '',
+          content: content || '',
+          is_custom_content_enabled: is_custom_content_enabled ? 1 : 0,
+        })
+        .run();
     }
 
-    return NextResponse.json({ success: true, message: 'Content updated successfully' });
+    return NextResponse.json({ success: true, message: 'Page content updated successfully' });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
   }
