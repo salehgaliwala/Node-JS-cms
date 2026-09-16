@@ -5,15 +5,21 @@ import { eq, or } from 'drizzle-orm';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const route = searchParams.get('route') || '/';
+  const routeParam = searchParams.get('route');
 
   try {
-    // Fetch content for the requested route plus global elements
-    const rows = db
-      .select()
-      .from(siteContent)
-      .where(or(eq(siteContent.page_route, route), eq(siteContent.page_route, 'global')))
-      .all();
+    let rows;
+    if (routeParam === 'all') {
+      rows = db.select().from(siteContent).all();
+    } else {
+      const route = routeParam || '/';
+      // Fetch content for the requested route plus global elements
+      rows = db
+        .select()
+        .from(siteContent)
+        .where(or(eq(siteContent.page_route, route), eq(siteContent.page_route, 'global')))
+        .all();
+    }
 
     const flattened: Record<string, string> = {};
     for (const row of rows) {
