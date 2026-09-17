@@ -18,3 +18,9 @@
  GET /api/content?route=/sign-up 200 in 17ms
  ✓ Compiled /api/subscriptions in 136ms (380 modules)
  POST /api/subscriptions 200 in 200ms
+ ○ Compiling /api/content/update ...
+ ✓ Compiled /api/content/update in 3s (383 modules)
+ POST /api/content/update 200 in 3514ms
+ ✓ Compiled in 880ms (542 modules)
+ ✓ Compiled /api/content/update in 297ms (383 modules)
+ POST /api/content/update 200 in 405ms
